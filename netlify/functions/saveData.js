@@ -1,13 +1,15 @@
 const { getStore } = require('@netlify/blobs');
 
 exports.handler = async (event, context) => {
+  const headers = {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*'
+  };
+
   if (event.httpMethod !== 'POST') {
     return { 
       statusCode: 405,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-      },
+      headers,
       body: JSON.stringify({ error: 'Method Not Allowed' })
     };
   }
@@ -16,15 +18,12 @@ exports.handler = async (event, context) => {
     const store = getStore('sales-data');
     const allPromoData = JSON.parse(event.body);
     
-    // Validate data structure
-    if (!allPromoData.palingMurah || !allPromoData.hematMingguIni || !allPromoData.tebusHeboh) {
+    // Validate data
+    if (!allPromoData || typeof allPromoData !== 'object') {
       return {
         statusCode: 400,
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
-        },
-        body: JSON.stringify({ error: 'Invalid data structure' })
+        headers,
+        body: JSON.stringify({ error: 'Invalid data format' })
       };
     }
     
@@ -32,21 +31,19 @@ exports.handler = async (event, context) => {
     
     return {
       statusCode: 200,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-      },
+      headers,
       body: JSON.stringify({ success: true })
     };
   } catch (error) {
-    console.error('Error:', error);
+    console.error('saveData error:', error);
+    
     return {
       statusCode: 500,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-      },
-      body: JSON.stringify({ error: 'Failed to save data' })
+      headers,
+      body: JSON.stringify({ 
+        error: 'Failed to save data',
+        message: error.message 
+      })
     };
   }
 };

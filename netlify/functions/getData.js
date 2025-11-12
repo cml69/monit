@@ -1,18 +1,21 @@
 const { getStore } = require('@netlify/blobs');
 
 exports.handler = async (event, context) => {
+  const headers = {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*'
+  };
+
   try {
     const store = getStore('sales-data');
     const data = await store.get('allPromoData', { type: 'text' });
     
     if (!data) {
+      // Return default data structure if nothing exists
       return {
         statusCode: 200,
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
-        },
-        body: JSON.stringify({ 
+        headers,
+        body: JSON.stringify({
           palingMurah: [],
           hematMingguIni: [],
           tebusHeboh: []
@@ -22,21 +25,21 @@ exports.handler = async (event, context) => {
     
     return {
       statusCode: 200,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-      },
+      headers,
       body: data
     };
   } catch (error) {
-    console.error('Error:', error);
+    console.error('getData error:', error);
+    
+    // Return default data on error
     return {
-      statusCode: 500,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-      },
-      body: JSON.stringify({ error: 'Failed to fetch data' })
+      statusCode: 200,
+      headers,
+      body: JSON.stringify({
+        palingMurah: [],
+        hematMingguIni: [],
+        tebusHeboh: []
+      })
     };
   }
 };
