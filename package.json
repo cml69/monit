@@ -1,0 +1,11 @@
+{
+  "name": "monitor-sales-promo",
+  "version": "1.0.0",
+  "description": "Monitor Sales Multi Promo dengan Netlify Storage",
+  "scripts": {
+    "build": "echo 'No build needed'"
+  },
+  "dependencies": {
+    "@netlify/blobs": "^7.0.0"
+  }
+}
